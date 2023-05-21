@@ -5,7 +5,7 @@ import { Typography } from "@mui/material";
 export function Main() {
   return (
     <>
-      <Typography variant="h2" align="center" gutterBottom>
+      <Typography sx={{ margin: 2 }} variant="h2" align="center" gutterBottom>
         TODOS
       </Typography>
       <MainTable />

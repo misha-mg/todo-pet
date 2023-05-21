@@ -7,10 +7,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button } from "@mui/material";
+import { Button, Checkbox } from "@mui/material";
 import { useRef } from "react";
 import { useState } from "react";
-// import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+
+import ClearIcon from "@mui/icons-material/Clear";
 
 export default function MainTable() {
   const mockList = [];
@@ -23,22 +24,24 @@ export default function MainTable() {
 
   function getInform(event) {
     setInputInfo(inputField.current.value);
-    console.log(inputInfo);
   }
 
   function handleAdd() {
     if (!!inputInfo) {
       let object = {};
       object.name = inputInfo;
+      object.check = false;
       const newList = [...list];
       newList.push(object);
-      console.log(list);
 
       setList(newList);
-      console.log(newList);
       clearInput();
     }
   }
+
+  document.addEventListener("keyup", (event) => {
+    if (event.code === "Enter") handleAdd();
+  });
 
   function clearList() {
     setList([]);
@@ -46,7 +49,6 @@ export default function MainTable() {
 
   function handleDeleteFactory(id) {
     return () => {
-      console.log(id);
       const newList = [...list];
       newList.splice(id, 1);
       setList(newList);
@@ -58,11 +60,33 @@ export default function MainTable() {
     setInputInfo("");
   }
 
-  console.log("render");
+  // const [x, setX] = useState(list);
+
+  const soldCheckbox = ({ target: { checked, id } }) => {
+    let obj = [...list];
+    obj[id].check = checked;
+    setList(obj);
+
+    const text = document.getElementsByClassName("text");
+    const buttons = document.getElementsByClassName("buttonDelete");
+
+    // console.log(text[id]);
+
+    if (list[id].check === true) {
+      text[id].classList.add("done");
+      buttons[id].classList.add("done");
+      buttons[id].disabled = true;
+    } else if (list[id].check === false) {
+      text[id].classList.remove("done");
+      buttons[id].classList.remove("done");
+      buttons[id].disabled = false;
+    }
+  };
 
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <div></div>
+      <Table sx={{ minWidth: 350 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell
@@ -71,21 +95,46 @@ export default function MainTable() {
                 width: 300,
               }}
             >
-              <Button variant="outlined" color="error" onClick={clearList}>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={clearList}
+                sx={{
+                  height: 44,
+                }}
+              >
                 Clear all
               </Button>
             </TableCell>
-            <TableCell align="center">
+            <TableCell
+              align="center"
+              sx={{
+                lineHeight: 0,
+              }}
+            >
               <input
                 id="standard-multiline-flexible"
                 label="todo"
                 variant="standard"
+                style={{ padding: "10px 30px 10px 10px" }}
                 sx={{
                   width: 500,
                 }}
                 ref={inputField}
                 onChange={getInform}
               />
+              <Button
+                style={{ margin: "0px 0px 0px -40px" }}
+                color="error"
+                sx={{
+                  minWidth: 20,
+                  width: 30,
+                  height: 30,
+                }}
+                onClick={() => clearInput()}
+              >
+                <ClearIcon />
+              </Button>
             </TableCell>
             <TableCell
               align="center"
@@ -94,7 +143,14 @@ export default function MainTable() {
                 width: 300,
               }}
             >
-              <Button variant="outlined" color="success" onClick={handleAdd}>
+              <Button
+                variant="outlined"
+                color="success"
+                onClick={handleAdd}
+                sx={{
+                  height: 44,
+                }}
+              >
                 Add
               </Button>
             </TableCell>
@@ -107,7 +163,13 @@ export default function MainTable() {
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row" align="center">
-                {list.indexOf(row) + 1}
+                {/*                                                                                */}
+                <Checkbox
+                  type="checkbox"
+                  checked={list[list.indexOf(row)].check}
+                  id={list.indexOf(row).toString()}
+                  onChange={soldCheckbox}
+                />
               </TableCell>
               <TableCell align="center">
                 <div className="text">{row.name}</div>
@@ -117,6 +179,7 @@ export default function MainTable() {
                   variant="outlined"
                   color="error"
                   onClick={handleDeleteFactory(list.indexOf(row))}
+                  className="buttonDelete"
                 >
                   DELETE
                 </Button>
@@ -126,12 +189,6 @@ export default function MainTable() {
           <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
             <TableCell component="th" scope="row" align="center">
               Total: {list.length}
-            </TableCell>
-            <TableCell component="th" scope="row"></TableCell>
-            <TableCell align="right">
-              <Button>all</Button>
-              <Button>comp</Button>
-              <Button>active</Button>
             </TableCell>
           </TableRow>
         </TableBody>

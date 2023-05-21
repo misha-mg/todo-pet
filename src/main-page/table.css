@@ -7,3 +7,15 @@ input{
 .text{
     font-size: 18px;
 }
+.done{
+    text-decoration: line-through;
+    color: grey;
+}
+.buttonDelete.done{
+    color: grey;
+    border-color: grey;
+}
+.buttonDelete.done:hover{
+    color: grey;
+    border-color: grey;
+}
